@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>등록 확인 · Dégustation Welcome Drink</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#f4ede2">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#3c1108;--sub:#564747;--btn:#412a2a;--err:#cc0101;--paper:#f4ede2;--z:1}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--paper);-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%}
+  body{font-family:"Noto Sans KR",-apple-system,"Apple SD Gothic Neo",sans-serif;color:var(--ink)}
+  p{margin:0} button,input{font:inherit;color:inherit}
+  .hidden{display:none!important}
+
+  /* 393 × 880 디자인 (상태바 제외) 을 화면 폭에 맞춰 확대/축소 */
+  .page{position:relative;width:393px;height:880px;margin:0 auto;zoom:var(--z);overflow:hidden}
+  .texture{position:absolute;left:-5px;top:-2px;width:403px;height:2995px;pointer-events:none;z-index:5;
+    mix-blend-mode:multiply;opacity:.9;background:url(assets/texture.png) center bottom/403px 1243px repeat-y}
+  .abs{position:absolute}
+
+  .hd{position:absolute;left:1px;top:5px;width:391px;height:52px;padding:0 20px;display:flex;align-items:center;justify-content:space-between;z-index:2}
+  .hd a,.hd span.back{font-size:16px;color:var(--ink);text-decoration:none;line-height:1.2;white-space:nowrap}
+  .hd .ghost{opacity:0;pointer-events:none}
+  .hd img{display:block;width:109px;height:25px;margin-top:2px}
+
+  .ill{position:absolute;left:50%;transform:translateX(-50%);display:block}
+
+  /* A · B : 번호 입력 */
+  .form{position:absolute;left:20px;top:414px;width:351px;display:flex;flex-direction:column;gap:28px}
+  .ttl{font-weight:700;font-size:30px;letter-spacing:-1px;line-height:36px;color:var(--ink)}
+  .sub{font-size:16px;color:var(--sub);padding-top:8px;line-height:1.2}
+  .desc{font-size:14px;line-height:22.4px;color:var(--sub)}
+  .fld{display:flex;flex-direction:column;height:88px}
+  .fld label{font-size:12px;color:var(--sub);line-height:1.2}
+  .fld input{margin-top:8px;height:44px;width:100%;border:1px solid var(--sub);border-radius:5px;background:transparent;padding:0 12px;
+    font-size:14px;color:#000;outline:none;-webkit-appearance:none;appearance:none}
+  .fld input::placeholder{color:var(--sub);opacity:1}
+  .fld input:focus{border-color:var(--ink)}
+  .fld.err input{border-color:var(--err)}
+  .fld .msg{font-size:12px;color:var(--err);padding-top:8px;line-height:1.2;min-height:22px}
+  .btn{height:48px;width:100%;border-radius:5px;border:0;display:flex;align-items:center;justify-content:center;
+    font-weight:500;font-size:16px;cursor:pointer;line-height:1.2;text-decoration:none}
+  .btn.dark{background:var(--btn);color:#fff}
+  .btn.ink{background:var(--ink);color:#fff}
+  .btn.line{background:#fff;border:1px solid var(--ink);color:var(--ink)}
+  .btn[disabled]{cursor:default;opacity:.85}
+  .btn:active{opacity:.85}
+  .foot-link{position:absolute;left:20px;top:820px;width:353px;text-align:center;font-size:14px;color:var(--ink);
+    text-decoration:underline;text-underline-offset:3px;line-height:1.2}
+
+  /* C · D : 등록 내역 */
+  .res{position:absolute;left:20px;top:356px;width:351px;display:flex;flex-direction:column;gap:24px}
+  .res .in{display:flex;flex-direction:column;gap:16px}
+  .num{display:flex;flex-direction:column;gap:8px;padding:10px 16px}
+  .num .k{font-size:13px;line-height:1.2}
+  .num .v{font-weight:800;font-size:72px;line-height:72px;letter-spacing:-3px}
+  .num .w{font-weight:500;font-size:18px;line-height:1.2}
+  .steps{border:1px solid var(--ink);display:flex;flex-direction:column}
+  .st{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid #e3e3e3;font-size:14px;line-height:1.2;color:var(--ink)}
+  .st:last-child{border-bottom:0}
+  .st .d{width:22px;height:22px;border-radius:11px;border:1px solid var(--ink);flex:none;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff}
+  .st.done .d{background:var(--ink)}
+  .st .t{white-space:nowrap}
+  .st .s{margin-left:auto;font-size:12px;white-space:nowrap}
+  .st.cur{background:var(--ink);color:#fff}
+  .st.cur .d{border-color:#fff}
+  .st.cur.now .t,.st.cur.now .s{font-weight:700}
+  .call{background:var(--ink);height:63px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;text-align:center;line-height:1.2}
+  .note{font-size:12px;line-height:19.2px;color:rgba(60,17,8,.8)}
+
+  /* E : 내역 없음 */
+  .e-ttl{position:absolute;left:20px;top:349px;width:351px}
+  .e-desc{position:absolute;left:20px;top:432px;width:351px;font-size:14px;line-height:22.4px;color:var(--sub)}
+  .e-b1{position:absolute;left:20px;top:731px;width:351px}
+  .e-b2{position:absolute;left:20px;top:799px;width:351px}
+</style>
+</head>
+<body>
+<div class="page" id="page">
+  <div class="texture" aria-hidden="true"></div>
+  <header class="hd">
+    <a href="./" id="backLink">← 돌아가기</a>
+    <img src="assets/logo-degustation.svg" alt="Dégustation">
+    <span class="back ghost" aria-hidden="true">← 돌아가기</span>
+  </header>
+
+  <!-- A · B : 번호 입력 -->
+  <section id="vInput">
+    <img class="ill" src="assets/ill-check.png" alt="" style="top:69px;width:352px;height:285px;margin-left:-.5px">
+    <form class="form" id="fInput" novalidate>
+      <div>
+        <p class="ttl">Check your<br>reservation</p>
+        <p class="sub">등록 확인</p>
+      </div>
+      <p class="desc">사전 등록 때 입력한 휴대폰 번호로<br>등록 번호를 다시 확인할 수 있어요.</p>
+      <div class="fld" id="fld">
+        <label for="phone">휴대폰 번호</label>
+        <input id="phone" type="tel" inputmode="numeric" autocomplete="tel" maxlength="13" placeholder="010-0000-0000">
+        <p class="msg" id="msg"></p>
+      </div>
+      <button class="btn dark" id="btnCheck" type="submit">확인하기</button>
+    </form>
+    <a class="foot-link" href="./#register">아직 등록 전이신가요? 사전 등록하러 가기</a>
+  </section>
+
+  <!-- C · D : 등록 내역 있음 -->
+  <section id="vResult" class="hidden">
+    <img class="ill" id="rIll" src="assets/ill-ticket.png" alt="">
+    <div class="res">
+      <div class="in">
+        <div class="num">
+          <p class="k">Your number · 등록 번호</p>
+          <p class="v" id="rNo">000</p>
+          <p class="w" id="rWho"></p>
+        </div>
+        <div class="steps" id="rSteps"></div>
+        <div class="call" id="rCall"></div>
+        <p class="note">제공되는 웰컴 드링크는 알코올이 함유된 음료입니다.</p>
+      </div>
+      <button class="btn line" id="btnOther" type="button">다른 번호로 확인하기</button>
+    </div>
+  </section>
+
+  <!-- E : 등록 내역 없음 -->
+  <section id="vEmpty" class="hidden">
+    <img class="ill" src="assets/ill-empty.png" alt="" style="top:146px;width:292px;height:177px;margin-left:-.5px;mix-blend-mode:multiply;opacity:.9">
+    <div class="e-ttl"><p class="ttl">No reservation</p><p class="sub">등록 내역이 없어요</p></div>
+    <p class="e-desc"><span id="eNum"></span> 으로 등록된 내역을 찾지 못했어요.<br>번호를 다시 확인하거나, 아직 등록 전이라면<br>사전 등록을 진행해 주세요.</p>
+    <button class="btn line e-b1" id="btnRetry" type="button">번호 다시 입력하기</button>
+    <a class="btn ink e-b2" id="btnRegister" href="./#register">사전 등록하러 가기</a>
+  </section>
+</div>
+
+<script src="config.js"></script>
+<script src="api.js"></script>
+<script>
+(function(){
+  Drink.fitToWidth();
+  const $ = id => document.getElementById(id);
+  const views = ['vInput','vResult','vEmpty'];
+  const show = v => { views.forEach(x => $(x).classList.toggle('hidden', x !== v)); window.scrollTo(0, 0); };
+
+  // 입력 화면
+  const phone = $('phone'), fld = $('fld'), msg = $('msg'), btn = $('btnCheck');
+  phone.addEventListener('input', () => { phone.value = Drink.fmtPhone(phone.value); fld.classList.remove('err'); msg.textContent = ''; });
+  function setLoading(on){ btn.disabled = on; btn.textContent = on ? '조회 중…' : '확인하기'; }
+  function showError(t){ fld.classList.add('err'); msg.textContent = t; }
+
+  async function check(p){
+    if (!Drink.validPhone(p)) return showError('휴대폰 번호를 다시 확인해 주세요.');
+    setLoading(true);
+    try {
+      const r = await Drink.call('lookup', { phone: p });
+      if (r.ok) { Drink.mine.set(p.replace(/\D/g,'')); renderResult(r); }
+      else if (r.code === 'NOT_FOUND') { renderEmpty(p); }
+      else showError(r.message || '휴대폰 번호를 다시 확인해 주세요.');
+    } catch (e) { showError('연결이 원활하지 않아요. 잠시 후 다시 시도해 주세요.'); }
+    finally { setLoading(false); }
+  }
+  $('fInput').addEventListener('submit', e => { e.preventDefault(); check(phone.value); });
+
+  // 결과 화면
+  function nowKST(){ const d = new Date(); return new Date(d.getTime() + (d.getTimezoneOffset() + 540) * 60000); }
+  function renderResult(r){
+    $('rNo').textContent = String(r.number).padStart(3, '0');
+    $('rWho').textContent = (r.grade ? r.grade + ' · ' : '') + r.name + ' 님';
+    const afterFive = nowKST().getHours() >= 17;
+    const steps = [
+      { t:'01 온라인 사전 등록', done:true },
+      { t:'02 학과 사무실에서 티켓 교환', done:!!r.exchanged },
+      { t:'03 17:00 Refresher 존에서 와인 받기', done:!!r.received }
+    ];
+    const cur = !r.exchanged ? 1 : (!r.received ? 2 : -1);
+    const box = $('rSteps'); box.innerHTML = '';
+    steps.forEach((s, i) => {
+      const row = document.createElement('div');
+      const isCur = i === cur, isNow = isCur && (i === 1 || afterFive);
+      row.className = 'st' + (s.done ? ' done' : '') + (isCur ? ' cur' : '') + (isNow ? ' now' : '');
+      const d = document.createElement('span'); d.className = 'd'; d.textContent = s.done ? '✓' : '';
+      const t = document.createElement('span'); t.className = 't'; t.textContent = s.t;
+      const st = document.createElement('span'); st.className = 's';
+      st.textContent = s.done ? '완료' : (isNow ? '지금 할 일' : '대기');
+      row.append(d, t, st); box.appendChild(row);
+    });
+    const ill = $('rIll');
+    if (!r.exchanged) {
+      ill.src = 'assets/ill-ticket.png'; Object.assign(ill.style, { top:'91px', width:'325px', height:'249px', marginLeft:'0' });
+      $('rCall').textContent = '“학과 사무실에서 이 화면을 보여주세요”';
+    } else {
+      ill.src = 'assets/ill-exchanged.png'; Object.assign(ill.style, { top:'89px', width:'278px', height:'250px', marginLeft:'-.5px' });
+      $('rCall').textContent = r.received ? '웰컴 드링크 수령 완료 · 즐거운 관람 되세요' : '“관계자에게 티켓을 보여주세요.”';
+    }
+    show('vResult');
+  }
+  $('btnOther').onclick = () => { Drink.mine.clear(); phone.value = ''; fld.classList.remove('err'); msg.textContent = ''; show('vInput'); };
+
+  // 내역 없음
+  async function renderEmpty(p){
+    $('eNum').textContent = Drink.fmtPhone(p);
+    show('vEmpty');
+    try {
+      const s = await Drink.call('status', {}, 0);
+      if (s && s.ok && (!s.open || s.remaining <= 0)) {
+        const b = $('btnRegister'); b.textContent = '선착순 등록이 마감되었어요'; b.removeAttribute('href'); b.style.opacity = '.55';
+      }
+    } catch (e) {}
+  }
+  $('btnRetry').onclick = () => { show('vInput'); phone.focus(); };
+
+  // 시작: 이 기기에서 등록/조회한 번호가 있으면 바로 결과로
+  const saved = Drink.mine.get();
+  if (saved) { phone.value = Drink.fmtPhone(saved); check(saved); }
+})();
+</script>
+</body>
+</html>

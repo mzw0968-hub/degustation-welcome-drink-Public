@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dégustation · Welcome Drink 사전 등록</title>
+<meta name="description" content="2026 호서대학교 산업디자인 졸업전시 Dégustation — 웰컴 드링크 선착순 사전 등록">
+<meta name="theme-color" content="#8e2611">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Dégustation · Welcome Drink 사전 등록">
+<meta property="og:description" content="선착순 사전 등록하고 오프닝 17:00, Refresher 존에서 웰컴 드링크를 받아가세요.">
+<meta property="og:image" content="https://degustation-invitation.vercel.app/drink/assets/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=switzer@400,401&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-kopubworld@1.0.3/css/batang.css">
+<style>
+  @font-face{font-family:"S-Core Dream";font-weight:300;font-display:swap;src:url(https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-3Light.woff) format("woff")}
+  @font-face{font-family:"S-Core Dream";font-weight:400;font-display:swap;src:url(https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-4Regular.woff) format("woff")}
+  @font-face{font-family:"S-Core Dream";font-weight:500;font-display:swap;src:url(https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-5Medium.woff) format("woff")}
+  @font-face{font-family:Aesthetic;font-display:swap;src:url(https://degustation-invitation.vercel.app/fonts/Aesthetic-Regular.woff2) format("woff2")}
+  @font-face{font-family:CherieDEMO;font-display:swap;src:url(https://degustation-invitation.vercel.app/fonts/CherieDEMO.woff2) format("woff2")}
+
+  :root{
+    --bg:#8e2611; --paper:#f4ede2; --brown:#5b180a; --brown-70:rgba(91,24,10,.7);
+    --red:#802e1e; --ink:#3c1108; --accent:#a8270e; --cta:#842310;
+    --sc:"S-Core Dream",Pretendard,-apple-system,"Apple SD Gothic Neo",sans-serif;
+    --batang:"KoPubWorld Batang","Nanum Myeongjo",serif;
+    --switzer:Switzer,"Helvetica Neue",Arial,sans-serif;
+    --aes:Aesthetic,CherieDEMO,serif; --cherie:CherieDEMO,serif;
+    --z:1;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%}
+  button,input{font:inherit;color:inherit}
+  p{margin:0}
+  .hidden{display:none!important}
+  .trim{text-box:trim-both cap alphabetic}
+
+  /* 393px 디자인을 화면 폭에 맞춰 그대로 확대/축소 */
+  .page{position:relative;width:393px;margin:0 auto;zoom:var(--z);padding:70px 20px 64px;overflow:hidden}
+  .texture{position:absolute;left:-5px;top:-2px;width:403px;bottom:0;pointer-events:none;z-index:5;
+    mix-blend-mode:multiply;opacity:.9;background:url(assets/texture.png) center bottom/403px 1243px repeat-y}
+  .col{display:flex;flex-direction:column;gap:12px;width:353px}
+  .card{background:var(--paper);position:relative;width:353px}
+
+  /* ① 첫 화면 */
+  .hero{height:760px;overflow:hidden;margin-bottom:40px}
+  .hero .photo{position:absolute;left:6px;top:6px;width:341px;height:378px;background:#bd5b5b;overflow:hidden}
+  .hero .photo img{position:absolute;left:-37px;top:0;width:414px;height:517px;object-fit:cover}
+  .hero .sig{position:absolute;left:59.1px;top:352.3px;width:287px;height:79px;mix-blend-mode:multiply}
+  .hero .w{position:absolute;color:var(--red);mix-blend-mode:multiply;white-space:nowrap;line-height:normal}
+  .hero .sw{font:400 36px var(--switzer);letter-spacing:-2.88px}
+  .hero .sw.i{font-style:italic}
+  .hero .ae{font:400 28px var(--aes);letter-spacing:-2.24px}
+  .hero .foot{position:absolute;left:7px;top:737px;width:338px;display:flex;align-items:center;justify-content:space-between;mix-blend-mode:multiply}
+  .hero .foot p{font:400 14px var(--cherie);letter-spacing:-.28px;color:var(--red);line-height:normal}
+  .hero .foot img{width:180px;height:1px;display:block;opacity:.75}
+
+  /* ② How to get */
+  .how{padding:32px 12px;display:flex;flex-direction:column;gap:64px;color:var(--ink)}
+  .how h2{margin:0;font:400 20px var(--aes);letter-spacing:-.4px;line-height:normal}
+  .step{display:flex;flex-direction:column;gap:4px;line-height:normal;white-space:nowrap;position:relative;z-index:1}
+  .step .n{font:400 16px var(--aes);letter-spacing:-.32px}
+  .step .t{font:400 14px var(--batang);letter-spacing:-.56px}
+  .step .s{font:400 10px var(--batang);letter-spacing:-.4px;color:rgba(60,17,8,.7)}
+  .deco{position:absolute;display:flex;align-items:center;justify-content:center;mix-blend-mode:multiply}
+  .deco img{display:block;flex:none}
+
+  /* ③ 남은 수량 */
+  .count{padding:32px 12px;display:flex;align-items:flex-end;justify-content:space-between;line-height:normal;white-space:nowrap}
+  .count .g{font:400 18px var(--sc);letter-spacing:-1.44px;color:var(--brown)}
+  .count .v{display:flex;align-items:flex-end}
+  .count .v b{font:500 24px var(--sc);letter-spacing:-1.92px;color:var(--accent)}
+  .count .v span{font:400 16px var(--sc);letter-spacing:-1.28px;color:var(--brown-70)}
+
+  /* ④ 폼 */
+  .form{padding:24px 12px;display:flex;flex-direction:column;gap:24px;font-family:var(--sc);color:var(--brown)}
+  .fld{display:flex;flex-direction:column;gap:8px}
+  .lbl{font:400 12px var(--sc);letter-spacing:-.96px;line-height:normal}
+  .row{display:flex;gap:6px;padding-left:4px}
+  .chip{flex:1 0 0;min-width:0;border:1px solid var(--brown);border-radius:5px;background:transparent;padding:12px 10px;text-align:left;
+    display:flex;flex-direction:column;gap:8px;cursor:pointer;color:var(--brown);line-height:normal;font-family:var(--sc)}
+  .chip b{font-weight:400;font-size:16px;letter-spacing:-1.28px}
+  .chip span{font-size:12px;letter-spacing:-.96px;color:var(--brown-70)}
+  .chip.on{background:var(--brown);color:#fff}
+  .chip.on span{color:rgba(255,255,255,.7)}
+  .chip[disabled]{background:rgba(191,98,79,.1);border-color:rgba(91,24,10,.5);color:var(--brown-70);cursor:default}
+  .inp{padding-left:4px}
+  .inp input{width:100%;border:1px solid var(--brown);border-radius:5px;background:transparent;height:40px;padding:0 10px;outline:none;
+    font:400 14px var(--sc);letter-spacing:-.28px;color:var(--brown);-webkit-appearance:none;appearance:none}
+  .inp input::placeholder{color:var(--brown-70);opacity:1}
+  .inp input:focus{border-width:1.5px;padding:0 9.5px}
+  .agree{display:flex;flex-direction:column;gap:10px}
+  .chk{display:flex;gap:10px;align-items:center;cursor:pointer;font-size:14px;letter-spacing:-1.12px;line-height:normal;white-space:nowrap}
+  .chk input{appearance:none;-webkit-appearance:none;width:20px;height:20px;margin:0;border:1px solid var(--brown);background:transparent;flex:none;cursor:pointer;display:grid;place-items:center}
+  .chk input:checked{background:var(--brown)}
+  .chk input:checked::after{content:"";width:9px;height:5px;border:solid var(--paper);border-width:0 0 1.5px 1.5px;transform:translateY(-1px) rotate(-45deg)}
+  .more summary{list-style:none;display:flex;gap:4px;align-items:center;padding:0 32px;cursor:pointer;font:300 12px var(--sc);letter-spacing:-.96px;line-height:normal}
+  .more summary::-webkit-details-marker{display:none}
+  .more summary img{width:8.66px;height:7.5px;transform:rotate(90deg);transition:transform .2s}
+  .more[open] summary img{transform:rotate(180deg)}
+  .more p{padding:10px 32px 0;font:300 11px/1.7 var(--sc);letter-spacing:-.4px;color:var(--brown-70)}
+  .cta{width:100%;height:45px;display:flex;align-items:center;justify-content:center;text-decoration:none;border:0;border-radius:5px;background:var(--cta);color:#fff;padding:0 10px;cursor:pointer;
+    font:400 18px var(--sc);letter-spacing:-1.44px;line-height:normal}
+  .cta:active{opacity:.88}.cta[disabled]{opacity:.6;cursor:default}
+  .cta.ghost{background:transparent;border:1px solid var(--cta);color:var(--cta)}
+  .err{font:400 13px var(--sc);color:var(--accent);text-align:center;margin-top:-10px;min-height:1px;letter-spacing:-.5px}
+  .err:empty{display:none}
+
+  .note{font:400 14px var(--sc);letter-spacing:-.56px;color:#fff;text-align:center;line-height:normal;white-space:pre-wrap}
+  .link{display:table;margin:36px auto 0;background:none;border:0;color:#fff;font:400 14px var(--sc);letter-spacing:-.56px;
+    text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:4px}
+
+  /* 마감 */
+  .closed{padding:40px 12px;text-align:center;color:var(--ink)}
+  .closed .k{font:400 28px var(--aes);letter-spacing:-1px;color:var(--red)}
+  .closed .t{font:400 14px/1.7 var(--batang);letter-spacing:-.56px;margin:14px 0 22px}
+  .spin{width:22px;height:22px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:sp .8s linear infinite;margin:30px auto}
+  @keyframes sp{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="page" id="page">
+  <div class="texture" aria-hidden="true"></div>
+
+  <!-- ① 첫 화면 -->
+  <section class="card hero" aria-label="Dégustation Welcome Drink">
+    <div class="photo"><img src="assets/hero.jpg" alt="웰컴 드링크 와인 잔"></div>
+    <img class="sig" src="assets/signature.svg" alt="Degustation">
+    <p class="w sw trim" style="left:21px;top:488px">HAVE</p>
+    <p class="w ae trim" style="left:119px;top:495px">A</p>
+    <p class="w sw i trim" style="left:70px;top:522px">DRINK</p>
+    <p class="w ae trim" style="left:279px;top:603px">W’</p>
+    <p class="w sw i trim" style="left:176px;top:630px">YOURSELF</p>
+    <div class="foot"><p class="trim">Opening</p><img src="assets/line.svg" alt=""><p class="trim">Welcome Drink</p></div>
+  </section>
+
+  <div class="col">
+    <!-- ② How to get -->
+    <section class="card how">
+      <div class="deco" style="left:294px;top:305.81px;width:59.427px;height:111.739px"><img src="assets/deco-wine.svg" alt="" style="width:58px;height:111px;transform:rotate(.74deg)"></div>
+      <div class="deco" style="left:76px;top:190.81px;width:68.786px;height:75.457px"><img src="assets/deco-ticket.svg" alt="" style="width:55.774px;height:64.648px;transform:rotate(12.88deg)"></div>
+      <div class="deco" style="left:249.52px;top:113px;width:87.965px;height:79.616px"><img src="assets/deco-phone.svg" alt="" style="width:83px;height:74px;transform:rotate(-4deg)"></div>
+      <h2>How to get?</h2>
+      <div class="step"><p class="n">Step 01</p><p class="t">본 링크에서 온라인 사전 등록을 진행하기</p></div>
+      <div class="step"><p class="n">Step 02</p><p class="t">학과 사무실에서 웰컴 드링크 티켓으로 교환하기</p></div>
+      <div class="step"><p class="n">Step 03</p><p class="t">전시오프닝 17:00시에 Refresher 존에서 와인받기</p><p class="s">제공되는 웰컴 드링크는 알코올이 함유된 음료입니다.</p></div>
+    </section>
+
+    <div id="loading" class="spin"></div>
+
+    <!-- ③④ 등록 -->
+    <section class="card count hidden" id="countView">
+      <p class="g trim" id="cntLabel">Total</p>
+      <div class="v"><b class="trim" id="cntRemain">–</b><span class="trim">/<span id="cntCap">–</span></span></div>
+    </section>
+
+    <form class="card form hidden" id="formView" novalidate>
+      <span id="register" style="position:absolute;top:-120px"></span>
+      <div class="fld"><p class="lbl trim">학년</p><div class="row" id="grades"></div></div>
+      <div class="fld"><label class="lbl trim" for="name">이름</label><div class="inp"><input id="name" type="text" maxlength="30" autocomplete="name" placeholder="이름을 적어주세요"></div></div>
+      <div class="fld"><label class="lbl trim" for="phone">휴대폰 번호</label><div class="inp"><input id="phone" type="tel" inputmode="numeric" maxlength="13" autocomplete="tel" placeholder="010-0000-0000"></div></div>
+      <div class="agree">
+        <label class="chk"><input type="checkbox" id="agree"><span class="trim">개인정보 수집 · 이용 동의 (필수)</span></label>
+        <details class="more"><summary><img src="assets/triangle.svg" alt=""><span class="trim">자세히 보기</span></summary>
+          <p>수집 항목: 학년, 이름, 휴대폰 번호<br>이용 목적: 웰컴 드링크 사전 등록 확인 및 중복 등록 방지<br>보유 기간: 전시 종료 후 즉시 파기<br>동의를 거부할 수 있으나, 이 경우 사전 등록이 불가합니다.</p></details>
+      </div>
+      <button class="cta" id="submitBtn" type="submit"><span class="trim" id="submitTxt">선착순 등록하기</span></button>
+      <p class="err" id="err"></p>
+    </form>
+
+
+
+    <!-- 마감 -->
+    <section class="card closed hidden" id="closedView">
+      <p class="k">Sold out</p>
+      <p class="t" id="closedMsg">선착순 사전 등록이 모두 마감되었어요.<br>관심 가져주셔서 감사합니다.</p>
+      <a class="cta ghost" href="check.html"><span class="trim">이미 등록했어요 · 등록 확인</span></a>
+    </section>
+
+    <p class="note trim" id="note">1인 1잔 · 17:00시에  Refresher 존에서 티켓을 보여주세요. </p>
+  </div>
+
+  <a class="link trim" href="check.html">이미 등록하셨나요? 등록 확인하기</a>
+</div>
+
+<script src="config.js"></script>
+<script src="api.js"></script>
+<script>
+(function(){
+  Drink.fitToWidth();
+  const $ = id => document.getElementById(id);
+  const EN = {'1학년':'Freshman','2학년':'Sophomore','3학년':'Junior','4학년':'Senior'};
+  const views = ['loading','countView','formView','closedView'];
+  const show = ids => views.forEach(v => $(v).classList.toggle('hidden', !ids.includes(v)));
+
+  let status = null, selGrade = '', busy = false;
+  ['phone'].forEach(id => $(id).addEventListener('input', e => { e.target.value = Drink.fmtPhone(e.target.value); }));
+
+  function applyStatus(s){
+    status = s;
+    const g = s.grades.find(x => x.name === selGrade);
+    if (g && g.remaining <= 0) selGrade = '';
+    renderGrades();
+  }
+  function renderGrades(){
+    const s = status, el = $('grades');
+    el.innerHTML = '';
+    s.grades.forEach(g => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'chip' + (g.name === selGrade ? ' on' : ''); b.disabled = g.remaining <= 0;
+      const n = document.createElement('b'); n.className = 'trim'; n.textContent = g.name;
+      const r = document.createElement('span'); r.className = 'trim'; r.textContent = g.remaining <= 0 ? '마감' : '남은 ' + g.remaining + '잔';
+      b.append(n, r); b.onclick = () => { selGrade = g.name; $('err').textContent = ''; renderGrades(); };
+      el.appendChild(b);
+    });
+    const g = s.grades.find(x => x.name === selGrade);
+    $('cntLabel').textContent = g ? (EN[g.name] || g.name) : 'Total';
+    $('cntRemain').textContent = g ? g.remaining : s.remaining;
+    $('cntCap').textContent = g ? g.capacity : s.capacity;
+  }
+  function showClosed(full){
+    $('closedMsg').innerHTML = full ? '선착순 사전 등록이 모두 마감되었어요.<br>관심 가져주셔서 감사합니다.' : '지금은 사전 등록 기간이 아니에요.<br>조금만 기다려 주세요.';
+    show(['closedView']);
+  }
+  function route(){
+    if (!status.open) return showClosed(false);
+    if (status.remaining <= 0) return showClosed(true);
+    show(['countView','formView']);
+    if (location.hash === '#register') setTimeout(() => $('register').scrollIntoView({behavior:'smooth'}), 200);
+  }
+  async function refresh(){ try { const s = await Drink.call('status', {}, 0); if (s && s.ok) applyStatus(s); } catch(e){} }
+  const goCheck = p => { Drink.mine.set(p.replace(/\D/g,'')); location.href = 'check.html'; };
+
+  $('formView').addEventListener('submit', async e => {
+    e.preventDefault();
+    if (busy) return;
+    const name = $('name').value.trim(), phone = $('phone').value;
+    $('err').textContent = '';
+    if (!selGrade) return ($('err').textContent = '학년을 선택해 주세요.');
+    if (!name) return ($('err').textContent = '이름을 적어주세요.');
+    if (!Drink.validPhone(phone)) return ($('err').textContent = '휴대폰 번호를 확인해 주세요.');
+    if (!$('agree').checked) return ($('err').textContent = '개인정보 수집 · 이용에 동의해 주세요.');
+    busy = true; const btn = $('submitBtn'); btn.disabled = true; $('submitTxt').textContent = '등록 중…';
+    try {
+      const r = await Drink.call('register', {grade:selGrade, name, phone, agree:true}, 3);
+      if (r.ok || r.code === 'DUPLICATE') return goCheck(phone);
+      if (r.code === 'GRADE_FULL') { await refresh(); if (status.remaining <= 0) showClosed(true); else $('err').textContent = r.message; }
+      else if (r.code === 'CLOSED') showClosed(false);
+      else $('err').textContent = r.message || '등록에 실패했어요. 다시 시도해 주세요.';
+    } catch(err) { $('err').textContent = '접속이 많아 연결이 원활하지 않아요. 잠시 후 다시 눌러 주세요.'; }
+    finally { busy = false; btn.disabled = false; $('submitTxt').textContent = '선착순 등록하기'; }
+  });
+
+  Drink.call('status', {}, 2).then(s => { applyStatus(s); route(); })
+    .catch(() => { $('loading').classList.add('hidden'); $('note').textContent = '페이지를 불러오지 못했어요. 새로고침해 주세요.'; });
+  setInterval(() => { if (!$('formView').classList.contains('hidden') && !document.hidden) refresh(); }, 30000);
+})();
+</script>
+</body>
+</html>
