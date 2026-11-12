@@ -28,7 +28,22 @@
   .hd .ghost{opacity:0;pointer-events:none}
   .hd img{display:block;width:109px;height:25px;margin-top:2px}
 
-  .ill{position:absolute;left:50%;transform:translateX(-50%);display:block}
+  .ill{position:absolute;left:50%;transform:translateX(-50%);display:block;transition:opacity .25s ease}
+  .ill.out{opacity:0}
+
+  /* 화면 전환 */
+  @view-transition{navigation:auto}
+  ::view-transition-old(root),::view-transition-new(root){animation-duration:.35s}
+  section.enter{animation:vin .42s cubic-bezier(.2,.8,.2,1) both}
+  section.enter .ill{animation:vfade .5s ease both}
+  @keyframes vin{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+  @keyframes vfade{from{opacity:0}to{opacity:1}}
+  .boot section{visibility:hidden}
+  .boot .loader{display:block}
+  .loader{display:none;position:absolute;left:50%;top:430px;width:22px;height:22px;margin-left:-11px;border:2px solid rgba(60,17,8,.2);
+    border-top-color:var(--ink);border-radius:50%;animation:spin .8s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  @media (prefers-reduced-motion:reduce){section.enter,section.enter .ill{animation:none}.st,.st .d,.ill,.call span{transition:none}}
 
   /* A · B : 번호 입력 */
   .form{position:absolute;left:20px;top:414px;width:351px;display:flex;flex-direction:column;gap:28px}
@@ -61,19 +76,24 @@
   .num .v{font-weight:800;font-size:72px;line-height:72px;letter-spacing:-3px}
   .num .w{font-weight:500;font-size:18px;line-height:1.2}
   .steps{border:1px solid var(--ink);display:flex;flex-direction:column}
-  .st{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid #e3e3e3;font-size:14px;line-height:1.2;color:var(--ink)}
+  .st{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid #e3e3e3;font-size:13px;line-height:1.2;color:var(--ink);
+    transition:background-color .35s ease,color .35s ease}
   .st:last-child{border-bottom:0}
-  .st .d{width:22px;height:22px;border-radius:11px;border:1px solid var(--ink);flex:none;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff}
+  .st .d{width:22px;height:22px;border-radius:11px;border:1px solid var(--ink);flex:none;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;
+    transition:background-color .35s ease,border-color .35s ease}
+  .st .d i{font-style:normal;transform:scale(0);transition:transform .3s cubic-bezier(.3,1.5,.5,1)}
+  .st.done .d i{transform:scale(1)}
   .st.done .d{background:var(--ink)}
-  .st .t{white-space:nowrap}
-  .st .s{margin-left:auto;padding-left:6px;font-size:12px;letter-spacing:-.4px;white-space:nowrap;flex:none}
-  .st .t{letter-spacing:-.2px}
+  .st .t{white-space:nowrap;flex:1;min-width:0}
+  .st .s{flex:none;width:80px;text-align:right;font-size:12px;white-space:nowrap}
   .st.cur{background:var(--ink);color:#fff}
   .st.cur .d{border-color:#fff}
   .st.cur.now .t,.st.cur.now .s{font-weight:700}
   .st.tap{cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none}
-  .st.tap:active{opacity:.75}
-  .st.busy{opacity:.55;pointer-events:none}
+  .st.tap:active{opacity:.8}
+  .st.busy{opacity:.6;pointer-events:none;transition:opacity .2s}
+  .call span{transition:opacity .22s ease}
+  .call span.out{opacity:0}
   .call{background:var(--ink);height:63px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;text-align:center;line-height:1.2}
   .note{font-size:12px;line-height:19.2px;color:rgba(60,17,8,.8)}
 
@@ -87,6 +107,7 @@
 <body>
 <div class="page" id="page">
   <div class="texture" aria-hidden="true"></div>
+  <div class="loader" aria-label="불러오는 중"></div>
   <header class="hd">
     <a href="./" id="backLink">← 돌아가기</a>
     <img src="assets/logo-degustation.svg" alt="Dégustation">
@@ -123,7 +144,7 @@
           <p class="w" id="rWho"></p>
         </div>
         <div class="steps" id="rSteps"></div>
-        <div class="call" id="rCall"></div>
+        <div class="call"><span id="rCall"></span></div>
         <p class="note">제공되는 웰컴 드링크는 알코올이 함유된 음료입니다.</p>
       </div>
       <button class="btn line" id="btnOther" type="button">다른 번호로 확인하기</button>
@@ -147,7 +168,14 @@
   Drink.fitToWidth();
   const $ = id => document.getElementById(id);
   const views = ['vInput','vResult','vEmpty'];
-  const show = v => { views.forEach(x => $(x).classList.toggle('hidden', x !== v)); window.scrollTo(0, 0); };
+  let curView = 'vInput';
+  const show = v => {
+    document.body.classList.remove('boot');
+    const changed = v !== curView; curView = v;
+    views.forEach(x => $(x).classList.toggle('hidden', x !== v));
+    if (changed) { const el = $(v); el.classList.remove('enter'); void el.offsetWidth; el.classList.add('enter'); }
+    window.scrollTo(0, 0);
+  };
 
   // 입력 화면
   const phone = $('phone'), fld = $('fld'), msg = $('msg'), btn = $('btnCheck');
@@ -181,31 +209,38 @@
       { t:'03 17:00 Refresher 존에서 와인 받기', done:!!r.received }
     ];
     const cur = !r.exchanged ? 1 : (!r.received ? 2 : -1);
-    const box = $('rSteps'); box.innerHTML = '';
-    steps.forEach((s, i) => {
-      const row = document.createElement('div');
-      const isCur = i === cur, isNow = isCur && (i === 1 || afterFive);
-      row.className = 'st' + (s.done ? ' done' : '') + (isCur ? ' cur' : '') + (isNow ? ' now' : '');
-      const d = document.createElement('span'); d.className = 'd'; d.textContent = s.done ? '✓' : '';
+    const box = $('rSteps');
+    if (!box.children.length) steps.forEach((s, i) => {
+      const row = document.createElement('div'); row.className = 'st';
+      const d = document.createElement('span'); d.className = 'd'; d.innerHTML = '<i>✓</i>';
       const t = document.createElement('span'); t.className = 't'; t.textContent = s.t;
       const st = document.createElement('span'); st.className = 's';
-      if (i === 0) st.textContent = '완료';
-      else {
-        st.textContent = s.done ? '터치해서 취소' : '터치해서 완료';
-        row.classList.add('tap');
-        row.setAttribute('role', 'button');
-        row.onclick = () => toggleStage(i === 1 ? 'exchanged' : 'received', !s.done, row);
+      if (i > 0) {
+        row.classList.add('tap'); row.setAttribute('role', 'button');
+        row.onclick = () => { const done = row.classList.contains('done'); toggleStage(i === 1 ? 'exchanged' : 'received', !done, row); };
       }
       row.append(d, t, st); box.appendChild(row);
     });
+    steps.forEach((s, i) => {
+      const row = box.children[i];
+      const isCur = i === cur, isNow = isCur && (i === 1 || afterFive);
+      row.classList.toggle('done', s.done); row.classList.toggle('cur', isCur); row.classList.toggle('now', isNow);
+      row.classList.remove('busy');
+      row.querySelector('.s').textContent = i === 0 ? '완료' : (s.done ? '터치해서 취소' : '터치해서 완료');
+    });
     const ill = $('rIll');
-    if (!r.exchanged) {
-      ill.src = 'assets/ill-ticket.png'; Object.assign(ill.style, { top:'91px', width:'325px', height:'249px', marginLeft:'0' });
-      $('rCall').textContent = '“학과 사무실에서 이 화면을 보여주세요”';
-    } else {
-      ill.src = 'assets/ill-exchanged.png'; Object.assign(ill.style, { top:'89px', width:'278px', height:'250px', marginLeft:'-.5px' });
-      $('rCall').textContent = r.received ? '웰컴 드링크 수령 완료 · 즐거운 관람 되세요' : '“관계자에게 티켓을 보여주세요.”';
+    const art = !r.exchanged
+      ? { src:'assets/ill-ticket.png', css:{ top:'91px', width:'325px', height:'249px', marginLeft:'0' } }
+      : { src:'assets/ill-exchanged.png', css:{ top:'89px', width:'278px', height:'250px', marginLeft:'-.5px' } };
+    if (!ill.getAttribute('src') || !ill.src.endsWith(art.src) || curView !== 'vResult') {
+      if (curView === 'vResult') {
+        ill.classList.add('out');
+        setTimeout(() => { ill.src = art.src; Object.assign(ill.style, art.css); }, 250);
+        ill.onload = () => ill.classList.remove('out');
+      } else { ill.src = art.src; Object.assign(ill.style, art.css); }
     }
+    setCall(!r.exchanged ? '“학과 사무실에서 이 화면을 보여주세요”'
+      : (r.received ? '웰컴 드링크 수령 완료 · 즐거운 관람 되세요' : '“관계자에게 티켓을 보여주세요.”'));
     show('vResult');
   }
   async function toggleStage(stage, value, row){
@@ -218,7 +253,14 @@
     } catch (e) { row.classList.remove('busy'); alertBox('연결이 원활하지 않아요. 다시 눌러 주세요.'); }
     finally { saving = false; }
   }
-  function alertBox(t){ const c = $('rCall'), old = c.textContent; c.textContent = t; setTimeout(() => { if (c.textContent === t) c.textContent = old; }, 2500); }
+  let callText = '';
+  function setCall(t, keep){
+    const c = $('rCall'); if (!keep) callText = t;
+    if (c.textContent === t) return;
+    if (curView !== 'vResult' || !c.textContent) { c.textContent = t; return; }
+    c.classList.add('out'); setTimeout(() => { c.textContent = t; c.classList.remove('out'); }, 220);
+  }
+  function alertBox(t){ setCall(t, true); setTimeout(() => setCall(callText), 2500); }
   $('btnOther').onclick = () => { Drink.mine.clear(); phone.value = ''; fld.classList.remove('err'); msg.textContent = ''; show('vInput'); };
 
   // 내역 없음
@@ -236,7 +278,7 @@
 
   // 시작: 이 기기에서 등록/조회한 번호가 있으면 바로 결과로
   const saved = Drink.mine.get();
-  if (saved) { phone.value = Drink.fmtPhone(saved); check(saved); }
+  if (saved) { document.body.classList.add('boot'); phone.value = Drink.fmtPhone(saved); check(saved).finally(() => { if (document.body.classList.contains('boot')) show('vInput'); }); }
 })();
 </script>
 </body>
