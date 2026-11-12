@@ -28,15 +28,15 @@
   .hd .ghost{opacity:0;pointer-events:none}
   .hd img{display:block;width:109px;height:25px;margin-top:2px}
 
-  .ill{position:absolute;left:50%;transform:translateX(-50%);display:block;transition:opacity .25s ease}
+  .ill{position:absolute;left:50%;transform:translateX(-50%);display:block;transition:opacity .16s ease}
   .ill.out{opacity:0}
 
   /* 화면 전환 */
   @view-transition{navigation:auto}
-  ::view-transition-old(root),::view-transition-new(root){animation-duration:.35s}
-  section.enter{animation:vin .42s cubic-bezier(.2,.8,.2,1) both}
-  section.enter .ill{animation:vfade .5s ease both}
-  @keyframes vin{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+  ::view-transition-old(root),::view-transition-new(root){animation-duration:.18s}
+  section.enter{animation:vin .24s cubic-bezier(.2,.8,.2,1) both}
+  section.enter .ill{animation:vfade .28s ease both}
+  @keyframes vin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
   @keyframes vfade{from{opacity:0}to{opacity:1}}
   .boot section{visibility:hidden}
   .boot .loader{display:block}
@@ -77,11 +77,11 @@
   .num .w{font-weight:500;font-size:18px;line-height:1.2}
   .steps{border:1px solid var(--ink);display:flex;flex-direction:column}
   .st{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid #e3e3e3;font-size:13px;line-height:1.2;color:var(--ink);
-    transition:background-color .35s ease,color .35s ease}
+    transition:background-color .2s ease,color .2s ease}
   .st:last-child{border-bottom:0}
   .st .d{width:22px;height:22px;border-radius:11px;border:1px solid var(--ink);flex:none;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;
-    transition:background-color .35s ease,border-color .35s ease}
-  .st .d i{font-style:normal;transform:scale(0);transition:transform .3s cubic-bezier(.3,1.5,.5,1)}
+    transition:background-color .2s ease,border-color .2s ease}
+  .st .d i{font-style:normal;transform:scale(0);transition:transform .2s cubic-bezier(.3,1.5,.5,1)}
   .st.done .d i{transform:scale(1)}
   .st.done .d{background:var(--ink)}
   .st .t{white-space:nowrap;flex:1;min-width:0}
@@ -92,7 +92,7 @@
   .st.tap{cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none}
   .st.tap:active{opacity:.8}
   .st.busy{opacity:.6;pointer-events:none;transition:opacity .2s}
-  .call span{transition:opacity .22s ease}
+  .call span{transition:opacity .14s ease}
   .call span.out{opacity:0}
   .call{background:var(--ink);height:63px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;text-align:center;line-height:1.2}
   .note{font-size:12px;line-height:19.2px;color:rgba(60,17,8,.8)}
@@ -188,7 +188,7 @@
     setLoading(true);
     try {
       const r = await Drink.call('lookup', { phone: p });
-      if (r.ok) { Drink.mine.set(p.replace(/\D/g,'')); current = { phone: p.replace(/\D/g,''), r }; renderResult(r); }
+      if (r.ok) { Drink.mine.set(p.replace(/\D/g,'')); current = { phone: p.replace(/\D/g,''), r }; saveLast(); renderResult(r); }
       else if (r.code === 'NOT_FOUND') { renderEmpty(p); }
       else showError(r.message || '휴대폰 번호를 다시 확인해 주세요.');
     } catch (e) { showError('연결이 원활하지 않아요. 잠시 후 다시 시도해 주세요.'); }
@@ -217,7 +217,7 @@
       const st = document.createElement('span'); st.className = 's';
       if (i > 0) {
         row.classList.add('tap'); row.setAttribute('role', 'button');
-        row.onclick = () => { const done = row.classList.contains('done'); toggleStage(i === 1 ? 'exchanged' : 'received', !done, row); };
+        row.onclick = () => { const done = row.classList.contains('done'); toggleStage(i === 1 ? 'exchanged' : 'received', !done); };
       }
       row.append(d, t, st); box.appendChild(row);
     });
@@ -235,7 +235,7 @@
     if (!ill.getAttribute('src') || !ill.src.endsWith(art.src) || curView !== 'vResult') {
       if (curView === 'vResult') {
         ill.classList.add('out');
-        setTimeout(() => { ill.src = art.src; Object.assign(ill.style, art.css); }, 250);
+        setTimeout(() => { ill.src = art.src; Object.assign(ill.style, art.css); }, 160);
         ill.onload = () => ill.classList.remove('out');
       } else { ill.src = art.src; Object.assign(ill.style, art.css); }
     }
@@ -243,25 +243,36 @@
       : (r.received ? '웰컴 드링크 수령 완료 · 즐거운 관람 되세요' : '“관계자에게 티켓을 보여주세요.”'));
     show('vResult');
   }
-  async function toggleStage(stage, value, row){
-    if (!current || saving) return;
-    saving = true; row.classList.add('busy');
+  // 터치하면 화면을 먼저 바꾸고, 저장은 뒤에서 (실패하면 되돌림)
+  let seq = 0;
+  async function toggleStage(stage, value){
+    if (!current) return;
+    const prev = current.r, next = Object.assign({}, prev);
+    if (stage === 'exchanged') { next.exchanged = value; if (!value) next.received = false; }
+    else { next.received = value; if (value) next.exchanged = true; }
+    current.r = next; saveLast(); renderResult(next);
+    const my = ++seq;
     try {
       const r = await Drink.call('selfStage', { phone: current.phone, stage, value }, 2);
-      if (r && r.ok) { current.r = r; renderResult(r); }
-      else { row.classList.remove('busy'); alertBox(r && r.message || '저장하지 못했어요. 다시 시도해 주세요.'); }
-    } catch (e) { row.classList.remove('busy'); alertBox('연결이 원활하지 않아요. 다시 눌러 주세요.'); }
-    finally { saving = false; }
+      if (my !== seq) return;               // 그 사이 또 눌렀으면 마지막 것만 반영
+      if (r && r.ok) { current.r = r; saveLast(); renderResult(r); }
+      else { current.r = prev; saveLast(); renderResult(prev); alertBox(r && r.message || '저장하지 못했어요. 다시 눌러 주세요.'); }
+    } catch (e) {
+      if (my !== seq) return;
+      current.r = prev; saveLast(); renderResult(prev); alertBox('연결이 원활하지 않아 저장하지 못했어요. 다시 눌러 주세요.');
+    }
   }
+  function saveLast(){ try { localStorage.setItem('wd_last', JSON.stringify(current)); } catch (e) {} }
+  function loadLast(p){ try { const v = JSON.parse(localStorage.getItem('wd_last')); return v && v.phone === p && v.r ? v : null; } catch (e) { return null; } }
   let callText = '';
   function setCall(t, keep){
     const c = $('rCall'); if (!keep) callText = t;
     if (c.textContent === t) return;
     if (curView !== 'vResult' || !c.textContent) { c.textContent = t; return; }
-    c.classList.add('out'); setTimeout(() => { c.textContent = t; c.classList.remove('out'); }, 220);
+    c.classList.add('out'); setTimeout(() => { c.textContent = t; c.classList.remove('out'); }, 140);
   }
   function alertBox(t){ setCall(t, true); setTimeout(() => setCall(callText), 2500); }
-  $('btnOther').onclick = () => { Drink.mine.clear(); phone.value = ''; fld.classList.remove('err'); msg.textContent = ''; show('vInput'); };
+  $('btnOther').onclick = () => { Drink.mine.clear(); try { localStorage.removeItem('wd_last'); } catch (e) {} current = null; phone.value = ''; fld.classList.remove('err'); msg.textContent = ''; show('vInput'); };
 
   // 내역 없음
   async function renderEmpty(p){
@@ -278,7 +289,19 @@
 
   // 시작: 이 기기에서 등록/조회한 번호가 있으면 바로 결과로
   const saved = Drink.mine.get();
-  if (saved) { document.body.classList.add('boot'); phone.value = Drink.fmtPhone(saved); check(saved).finally(() => { if (document.body.classList.contains('boot')) show('vInput'); }); }
+  if (saved) {
+    phone.value = Drink.fmtPhone(saved);
+    const last = loadLast(saved);
+    if (last) {
+      current = last; renderResult(last.r);            // 기억해 둔 정보로 바로 표시
+      Drink.call('lookup', { phone: saved }, 1).then(r => {   // 최신 상태는 뒤에서 조용히 확인
+        if (r && r.ok && current && current.phone === saved && !seq) { current.r = r; saveLast(); renderResult(r); }
+      }).catch(() => {});
+    } else {
+      document.body.classList.add('boot');
+      check(saved).finally(() => { if (document.body.classList.contains('boot')) show('vInput'); });
+    }
+  }
 })();
 </script>
 </body>

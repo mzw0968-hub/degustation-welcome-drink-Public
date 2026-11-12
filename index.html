@@ -18,7 +18,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-kopubworld@1.0.3/css/batang.css">
 <style>
   @view-transition{navigation:auto}
-  ::view-transition-old(root),::view-transition-new(root){animation-duration:.35s}
+  ::view-transition-old(root),::view-transition-new(root){animation-duration:.18s}
   @font-face{font-family:"S-Core Dream";font-weight:300;font-display:swap;src:url(https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-3Light.woff) format("woff")}
   @font-face{font-family:"S-Core Dream";font-weight:400;font-display:swap;src:url(https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-4Regular.woff) format("woff")}
   @font-face{font-family:"S-Core Dream";font-weight:500;font-display:swap;src:url(https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-5Medium.woff) format("woff")}
@@ -249,7 +249,7 @@
     busy = true; const btn = $('submitBtn'); btn.disabled = true; $('submitTxt').textContent = '등록 중…';
     try {
       const r = await Drink.call('register', {grade:selGrade, name, phone, agree:true}, 3);
-      if (r.ok || r.code === 'DUPLICATE') return goCheck(phone);
+      if (r.ok || r.code === 'DUPLICATE') { try { localStorage.setItem('wd_last', JSON.stringify({ phone: phone.replace(/\D/g,''), r: Object.assign({}, r, { ok: true }) })); } catch (e) {} return goCheck(phone); }
       if (r.code === 'GRADE_FULL') { await refresh(); if (status.remaining <= 0) showClosed(true); else $('err').textContent = r.message; }
       else if (r.code === 'CLOSED') showClosed(false);
       else $('err').textContent = r.message || '등록에 실패했어요. 다시 시도해 주세요.';
